@@ -169,6 +169,24 @@ export class N8nApiClient {
     }
   }
 
+  async activateWorkflow(id: string): Promise<Workflow> {
+    try {
+      const response = await this.client.post(`/workflows/${id}/activate`);
+      return response.data;
+    } catch (error) {
+      throw handleN8nApiError(error);
+    }
+  }
+
+  async deactivateWorkflow(id: string): Promise<Workflow> {
+    try {
+      const response = await this.client.post(`/workflows/${id}/deactivate`);
+      return response.data;
+    } catch (error) {
+      throw handleN8nApiError(error);
+    }
+  }
+
   async listWorkflows(params: WorkflowListParams = {}): Promise<WorkflowListResponse> {
     try {
       const response = await this.client.get('/workflows', { params });
@@ -202,6 +220,159 @@ export class N8nApiClient {
   async deleteExecution(id: string): Promise<void> {
     try {
       await this.client.delete(`/executions/${id}`);
+    } catch (error) {
+      throw handleN8nApiError(error);
+    }
+  }
+
+  async getExecutionData(id: string, includeData = true): Promise<any> {
+    try {
+      const response = await this.client.get(`/executions/${id}`, {
+        params: { includeData }
+      });
+      return response.data;
+    } catch (error) {
+      throw handleN8nApiError(error);
+    }
+  }
+
+  async analyzeExecutionPath(id: string): Promise<any> {
+    try {
+      // Get full execution data
+      const execution = await this.getExecutionData(id, true);
+      
+      if (!execution.data) {
+        return {
+          success: false,
+          error: 'Execution data not available'
+        };
+      }
+
+      // Parse execution data structure for forward walk
+      const executionData = JSON.parse(execution.data);
+      let runDataIndex = -1;
+      
+      // Find runData index in the execution data array
+      for (let i = 0; i < executionData.length; i++) {
+        if (typeof executionData[i] === 'object' && executionData[i].runData) {
+          runDataIndex = parseInt(executionData[i].runData);
+          break;
+        }
+      }
+
+      if (runDataIndex === -1) {
+        return {
+          success: false,
+          error: 'RunData index not found in execution'
+        };
+      }
+
+      const runData = executionData[runDataIndex];
+      const executionPath = [];
+
+      // Analyze each node execution
+      for (const [nodeName, nodeExecution] of Object.entries(runData)) {
+        if (Array.isArray(nodeExecution) && nodeExecution.length > 0) {
+          const nodeData = nodeExecution[0];
+          
+          executionPath.push({
+            nodeName,
+            startTime: nodeData.startTime,
+            executionTime: nodeData.executionTime,
+            hasError: !!nodeData.error,
+            outputItems: nodeData.data ? Object.keys(nodeData.data).length : 0
+          });
+        }
+      }
+
+      return {
+        success: true,
+        executionId: id,
+        path: executionPath.sort((a, b) => 
+          new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+        ),
+        totalNodes: executionPath.length,
+        totalTime: execution.stoppedAt ? 
+          new Date(execution.stoppedAt).getTime() - new Date(execution.startedAt).getTime() : null
+      };
+
+    } catch (error) {
+      throw handleN8nApiError(error);
+    }
+  }
+
+  async getNodeOutput(executionId: string, nodeId: string, outputIndex = 0): Promise<any> {
+    try {
+      // Get full execution data  
+      const execution = await this.getExecutionData(executionId, true);
+      
+      if (!execution.data) {
+        return {
+          success: false,
+          error: 'Execution data not available'
+        };
+      }
+
+      const executionData = JSON.parse(execution.data);
+      let runDataIndex = -1;
+      
+      // Find runData index
+      for (let i = 0; i < executionData.length; i++) {
+        if (typeof executionData[i] === 'object' && executionData[i].runData) {
+          runDataIndex = parseInt(executionData[i].runData);
+          break;
+        }
+      }
+
+      if (runDataIndex === -1) {
+        return {
+          success: false,
+          error: 'RunData index not found'
+        };
+      }
+
+      const runData = executionData[runDataIndex];
+      
+      if (!runData[nodeId]) {
+        return {
+          success: false,
+          error: `Node '${nodeId}' not found in execution`
+        };
+      }
+
+      const nodeExecution = runData[nodeId];
+      if (!Array.isArray(nodeExecution) || nodeExecution.length === 0) {
+        return {
+          success: false,
+          error: `No execution data for node '${nodeId}'`
+        };
+      }
+
+      const nodeData = nodeExecution[0];
+      if (!nodeData.data || !nodeData.data.main || !nodeData.data.main[outputIndex]) {
+        return {
+          success: false,
+          error: `No output data at index ${outputIndex} for node '${nodeId}'`
+        };
+      }
+
+      // Get the actual output data
+      const outputDataIndex = parseInt(nodeData.data.main[outputIndex][0]);
+      const outputData = executionData[outputDataIndex];
+
+      return {
+        success: true,
+        executionId,
+        nodeId,
+        outputIndex,
+        data: outputData,
+        metadata: {
+          startTime: nodeData.startTime,
+          executionTime: nodeData.executionTime,
+          itemCount: Array.isArray(outputData) ? outputData.length : 1
+        }
+      };
+
     } catch (error) {
       throw handleN8nApiError(error);
     }
@@ -398,6 +569,141 @@ export class N8nApiClient {
   async deleteVariable(id: string): Promise<void> {
     try {
       await this.client.delete(`/variables/${id}`);
+    } catch (error) {
+      throw handleN8nApiError(error);
+    }
+  }
+
+  async getWorkflowStatus(id: string): Promise<any> {
+    try {
+      const workflow = await this.getWorkflow(id);
+      
+      // Get recent executions to check activity
+      const executions = await this.listExecutions({
+        workflowId: id,
+        limit: 5
+      });
+
+      return {
+        success: true,
+        workflowId: id,
+        name: workflow.name,
+        active: workflow.active,
+        triggerCount: workflow.triggerCount || 0,
+        hasWebhooks: workflow.nodes?.some(node => 
+          node.type === 'n8n-nodes-base.webhook' || 
+          node.type.includes('webhook')
+        ) || false,
+        recentExecutions: executions.data?.length || 0,
+        lastExecution: executions.data?.[0] ? {
+          id: executions.data[0].id,
+          startedAt: executions.data[0].startedAt,
+          finished: executions.data[0].finished,
+          mode: executions.data[0].mode
+        } : null,
+        createdAt: workflow.createdAt,
+        updatedAt: workflow.updatedAt
+      };
+    } catch (error) {
+      throw handleN8nApiError(error);
+    }
+  }
+
+  async listWebhookRegistrations(workflowId?: string): Promise<any> {
+    try {
+      // Get all active workflows with webhooks
+      const workflows = await this.listWorkflows({ active: true });
+      const webhookWorkflows = [];
+
+      for (const workflow of workflows.data) {
+        const hasWebhooks = workflow.nodes?.some(node => 
+          node.type === 'n8n-nodes-base.webhook' || 
+          node.type.includes('webhook')
+        );
+
+        if (hasWebhooks && (!workflowId || workflow.id === workflowId)) {
+          const webhookNodes = workflow.nodes?.filter(node => 
+            node.type === 'n8n-nodes-base.webhook' || 
+            node.type.includes('webhook')
+          ) || [];
+
+          webhookWorkflows.push({
+            workflowId: workflow.id,
+            workflowName: workflow.name,
+            active: workflow.active,
+            webhooks: webhookNodes.map(node => ({
+              nodeId: node.id,
+              nodeName: node.name,
+              path: node.parameters?.path || 'unknown',
+              method: node.parameters?.httpMethod || 'GET',
+              url: `${this.client.defaults.baseURL?.replace('/api/v1', '')}/webhook/${node.parameters?.path || 'unknown'}`
+            }))
+          });
+        }
+      }
+
+      return {
+        success: true,
+        totalWebhooks: webhookWorkflows.reduce((sum, wf) => sum + wf.webhooks.length, 0),
+        totalWorkflows: webhookWorkflows.length,
+        registrations: webhookWorkflows
+      };
+    } catch (error) {
+      throw handleN8nApiError(error);
+    }
+  }
+
+  async getDatabaseStats(includeExecutions = true, includeWorkflows = true): Promise<any> {
+    try {
+      const stats: any = {
+        success: true,
+        timestamp: new Date().toISOString()
+      };
+
+      if (includeWorkflows) {
+        const allWorkflows = await this.listWorkflows();
+        const activeWorkflows = allWorkflows.data.filter(w => w.active);
+        
+        stats.workflows = {
+          total: allWorkflows.data.length,
+          active: activeWorkflows.length,
+          inactive: allWorkflows.data.length - activeWorkflows.length,
+          withWebhooks: allWorkflows.data.filter(w => 
+            w.nodes?.some(n => n.type.includes('webhook'))
+          ).length
+        };
+      }
+
+      if (includeExecutions) {
+        // Get recent execution statistics
+        const recentExecutions = await this.listExecutions({ limit: 100 });
+        const executions = recentExecutions.data;
+        
+        const now = new Date();
+        const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+        const recent24h = executions.filter(e => 
+          new Date(e.startedAt) > last24h
+        );
+        const recent7d = executions.filter(e => 
+          new Date(e.startedAt) > last7d
+        );
+
+        stats.executions = {
+          total: recentExecutions.count || executions.length,
+          last24Hours: recent24h.length,
+          last7Days: recent7d.length,
+          successful: executions.filter(e => e.finished && !e.stoppedAt).length,
+          failed: executions.filter(e => !e.finished || e.stoppedAt).length,
+          byMode: executions.reduce((acc, e) => {
+            acc[e.mode] = (acc[e.mode] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>)
+        };
+      }
+
+      return stats;
     } catch (error) {
       throw handleN8nApiError(error);
     }

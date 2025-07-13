@@ -804,6 +804,28 @@ export class N8NDocumentationMCPServer {
       case 'n8n_diagnostic':
         // No required parameters
         return n8nHandlers.handleDiagnostic({ params: { arguments: args } });
+      
+      // Workflow Activation Tools
+      case 'n8n_activate_workflow':
+        return n8nHandlers.handleActivateWorkflow(args);
+      case 'n8n_deactivate_workflow':
+        return n8nHandlers.handleDeactivateWorkflow(args);
+      
+      // Enhanced Execution Analysis Tools  
+      case 'n8n_get_execution_data':
+        return n8nHandlers.handleGetExecutionData(args);
+      case 'n8n_analyze_execution_path':
+        return n8nHandlers.handleAnalyzeExecutionPath(args);
+      case 'n8n_get_node_output':
+        return n8nHandlers.handleGetNodeOutput(args);
+      
+      // Status and Debugging Tools
+      case 'n8n_get_workflow_status':
+        return n8nHandlers.handleGetWorkflowStatus(args);
+      case 'n8n_list_webhook_registrations':
+        return n8nHandlers.handleListWebhookRegistrations(args);
+      case 'n8n_get_database_stats':
+        return n8nHandlers.handleGetDatabaseStats(args);
         
       default:
         throw new Error(`Unknown tool: ${name}`);
