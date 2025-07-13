@@ -55,6 +55,7 @@ export interface Workflow {
   updatedAt?: string;
   createdAt?: string;
   versionId?: string;
+  triggerCount?: number; // Number of triggers in the workflow
   meta?: {
     instanceId?: string;
   };
@@ -238,6 +239,7 @@ export interface ExecutionListParams {
 export interface ExecutionListResponse {
   data: Execution[];
   nextCursor?: string | null;
+  count?: number; // Total count of executions
 }
 
 export interface CredentialListParams {

@@ -836,7 +836,6 @@ export async function handleListAvailableTools(): Promise<McpToolResponse> {
         maxRetries: config.maxRetries
       } : null,
       limitations: [
-        'Cannot activate/deactivate workflows via API',
         'Cannot execute workflows directly (must use webhooks)',
         'Cannot stop running executions',
         'Tags and credentials have limited API support'
@@ -948,4 +947,315 @@ export async function handleDiagnostic(request: any): Promise<McpToolResponse> {
     success: true,
     data: diagnostic
   };
+}
+
+// Workflow Activation Handlers
+export async function handleActivateWorkflow(args: any): Promise<McpToolResponse> {
+  try {
+    const client = getN8nApiClient();
+    if (!client) {
+      return {
+        success: false,
+        error: 'n8n API not configured. Please set N8N_API_URL and N8N_API_KEY environment variables.'
+      };
+    }
+
+    const { id } = args;
+    if (!id) {
+      return {
+        success: false,
+        error: 'Workflow ID is required'
+      };
+    }
+
+    const workflow = await client.activateWorkflow(id);
+    
+    return {
+      success: true,
+      data: workflow,
+      message: `Workflow "${workflow.name}" activated successfully`
+    };
+  } catch (error) {
+    if (error instanceof N8nApiError) {
+      return {
+        success: false,
+        error: getUserFriendlyErrorMessage(error),
+        code: error.code
+      };
+    }
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+}
+
+export async function handleDeactivateWorkflow(args: any): Promise<McpToolResponse> {
+  try {
+    const client = getN8nApiClient();
+    if (!client) {
+      return {
+        success: false,
+        error: 'n8n API not configured. Please set N8N_API_URL and N8N_API_KEY environment variables.'
+      };
+    }
+
+    const { id } = args;
+    if (!id) {
+      return {
+        success: false,
+        error: 'Workflow ID is required'
+      };
+    }
+
+    const workflow = await client.deactivateWorkflow(id);
+    
+    return {
+      success: true,
+      data: workflow,
+      message: `Workflow "${workflow.name}" deactivated successfully`
+    };
+  } catch (error) {
+    if (error instanceof N8nApiError) {
+      return {
+        success: false,
+        error: getUserFriendlyErrorMessage(error),
+        code: error.code
+      };
+    }
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+}
+
+// Enhanced Execution Analysis Handlers
+export async function handleGetExecutionData(args: any): Promise<McpToolResponse> {
+  try {
+    const client = getN8nApiClient();
+    if (!client) {
+      return {
+        success: false,
+        error: 'n8n API not configured. Please set N8N_API_URL and N8N_API_KEY environment variables.'
+      };
+    }
+
+    const { id, includeData = true } = args;
+    if (!id) {
+      return {
+        success: false,
+        error: 'Execution ID is required'
+      };
+    }
+
+    const executionData = await client.getExecutionData(id, includeData);
+    
+    return {
+      success: true,
+      data: executionData,
+      message: `Execution data retrieved for execution ${id}`
+    };
+  } catch (error) {
+    if (error instanceof N8nApiError) {
+      return {
+        success: false,
+        error: getUserFriendlyErrorMessage(error),
+        code: error.code
+      };
+    }
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+}
+
+export async function handleAnalyzeExecutionPath(args: any): Promise<McpToolResponse> {
+  try {
+    const client = getN8nApiClient();
+    if (!client) {
+      return {
+        success: false,
+        error: 'n8n API not configured. Please set N8N_API_URL and N8N_API_KEY environment variables.'
+      };
+    }
+
+    const { id } = args;
+    if (!id) {
+      return {
+        success: false,
+        error: 'Execution ID is required'
+      };
+    }
+
+    const pathAnalysis = await client.analyzeExecutionPath(id);
+    
+    return {
+      success: true,
+      data: pathAnalysis,
+      message: `Execution path analyzed for execution ${id}`
+    };
+  } catch (error) {
+    if (error instanceof N8nApiError) {
+      return {
+        success: false,
+        error: getUserFriendlyErrorMessage(error),
+        code: error.code
+      };
+    }
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+}
+
+export async function handleGetNodeOutput(args: any): Promise<McpToolResponse> {
+  try {
+    const client = getN8nApiClient();
+    if (!client) {
+      return {
+        success: false,
+        error: 'n8n API not configured. Please set N8N_API_URL and N8N_API_KEY environment variables.'
+      };
+    }
+
+    const { executionId, nodeId, outputIndex = 0 } = args;
+    if (!executionId || !nodeId) {
+      return {
+        success: false,
+        error: 'Both executionId and nodeId are required'
+      };
+    }
+
+    const nodeOutput = await client.getNodeOutput(executionId, nodeId, outputIndex);
+    
+    return {
+      success: true,
+      data: nodeOutput,
+      message: `Node output retrieved for ${nodeId} in execution ${executionId}`
+    };
+  } catch (error) {
+    if (error instanceof N8nApiError) {
+      return {
+        success: false,
+        error: getUserFriendlyErrorMessage(error),
+        code: error.code
+      };
+    }
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+}
+
+// Status and Debugging Handlers  
+export async function handleGetWorkflowStatus(args: any): Promise<McpToolResponse> {
+  try {
+    const client = getN8nApiClient();
+    if (!client) {
+      return {
+        success: false,
+        error: 'n8n API not configured. Please set N8N_API_URL and N8N_API_KEY environment variables.'
+      };
+    }
+
+    const { id } = args;
+    if (!id) {
+      return {
+        success: false,
+        error: 'Workflow ID is required'
+      };
+    }
+
+    const status = await client.getWorkflowStatus(id);
+    
+    return {
+      success: true,
+      data: status,
+      message: `Workflow status retrieved for ${id}`
+    };
+  } catch (error) {
+    if (error instanceof N8nApiError) {
+      return {
+        success: false,
+        error: getUserFriendlyErrorMessage(error),
+        code: error.code
+      };
+    }
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+}
+
+export async function handleListWebhookRegistrations(args: any): Promise<McpToolResponse> {
+  try {
+    const client = getN8nApiClient();
+    if (!client) {
+      return {
+        success: false,
+        error: 'n8n API not configured. Please set N8N_API_URL and N8N_API_KEY environment variables.'
+      };
+    }
+
+    const { workflowId } = args;
+    const registrations = await client.listWebhookRegistrations(workflowId);
+    
+    return {
+      success: true,
+      data: registrations,
+      message: workflowId ? 
+        `Webhook registrations for workflow ${workflowId}` :
+        'All webhook registrations listed'
+    };
+  } catch (error) {
+    if (error instanceof N8nApiError) {
+      return {
+        success: false,
+        error: getUserFriendlyErrorMessage(error),
+        code: error.code
+      };
+    }
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+}
+
+export async function handleGetDatabaseStats(args: any): Promise<McpToolResponse> {
+  try {
+    const client = getN8nApiClient();
+    if (!client) {
+      return {
+        success: false,
+        error: 'n8n API not configured. Please set N8N_API_URL and N8N_API_KEY environment variables.'
+      };
+    }
+
+    const { includeExecutions = true, includeWorkflows = true } = args;
+    const stats = await client.getDatabaseStats(includeExecutions, includeWorkflows);
+    
+    return {
+      success: true,
+      data: stats,
+      message: 'Database statistics retrieved'
+    };
+  } catch (error) {
+    if (error instanceof N8nApiError) {
+      return {
+        success: false,
+        error: getUserFriendlyErrorMessage(error),
+        code: error.code
+      };
+    }
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
 }

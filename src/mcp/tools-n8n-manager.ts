@@ -399,5 +399,141 @@ export const n8nManagementTools: ToolDefinition[] = [
         }
       }
     }
+  },
+
+  // Workflow Activation Tools
+  {
+    name: 'n8n_activate_workflow',
+    description: `Activate workflow to enable triggers and webhooks. Uses dedicated activation endpoint.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+          description: 'Workflow ID to activate'
+        }
+      },
+      required: ['id']
+    }
+  },
+  {
+    name: 'n8n_deactivate_workflow', 
+    description: `Deactivate workflow to disable triggers and webhooks.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+          description: 'Workflow ID to deactivate'
+        }
+      },
+      required: ['id']
+    }
+  },
+
+  // Enhanced Execution Analysis Tools  
+  {
+    name: 'n8n_get_execution_data',
+    description: `Get detailed execution data with full node outputs and forward walk analysis.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+          description: 'Execution ID to analyze'
+        },
+        includeData: {
+          type: 'boolean',
+          description: 'Include full node output data (default: true)'
+        }
+      },
+      required: ['id']
+    }
+  },
+  {
+    name: 'n8n_analyze_execution_path',
+    description: `Analyze execution flow path with node-by-node progression and data flow.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+          description: 'Execution ID to analyze'
+        },
+        nodeId: {
+          type: 'string',
+          description: 'Specific node to focus on (optional)'
+        }
+      },
+      required: ['id']
+    }
+  },
+  {
+    name: 'n8n_get_node_output',
+    description: `Get specific node output data from execution.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        executionId: {
+          type: 'string',
+          description: 'Execution ID'
+        },
+        nodeId: {
+          type: 'string',
+          description: 'Node ID to get output from'
+        },
+        outputIndex: {
+          type: 'number',
+          description: 'Output index (default: 0)'
+        }
+      },
+      required: ['executionId', 'nodeId']
+    }
+  },
+
+  // Workflow Status and Debugging Tools
+  {
+    name: 'n8n_get_workflow_status',
+    description: `Get detailed workflow status including activation state and webhook registrations.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+          description: 'Workflow ID to check'
+        }
+      },
+      required: ['id']
+    }
+  },
+  {
+    name: 'n8n_list_webhook_registrations',
+    description: `List all registered webhooks and their associated workflows.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workflowId: {
+          type: 'string',
+          description: 'Filter by specific workflow ID (optional)'
+        }
+      }
+    }
+  },
+  {
+    name: 'n8n_get_database_stats',
+    description: `Get database statistics including execution counts, workflow metrics, and system health.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        includeExecutions: {
+          type: 'boolean',
+          description: 'Include execution statistics (default: true)'
+        },
+        includeWorkflows: {
+          type: 'boolean', 
+          description: 'Include workflow statistics (default: true)'
+        }
+      }
+    }
   }
 ];
