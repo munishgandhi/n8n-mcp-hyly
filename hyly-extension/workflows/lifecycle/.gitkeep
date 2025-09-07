@@ -1,0 +1,3 @@
+# This directory contains active workflow development lifecycle files
+# Files are organized by timestamp following the naming convention:
+# YYYYMMDD-HHMMSS-{workflowId}-{stage}-{description}.{ext}
