@@ -1,0 +1,33 @@
+{
+  "Manual Trigger": [
+    {
+      "json": {
+        "notion_data": {
+          "page_id": "12345-abcde-67890",
+          "title": "Complex Notion Data Test",
+          "properties": {
+            "Name": {"title": [{"text": {"content": "Test Page"}}]},
+            "Status": {"select": {"name": "In Progress"}},
+            "Tags": {"multi_select": [{"name": "urgent"}, {"name": "review"}]},
+            "Description": {"rich_text": [{"text": {"content": "This is a very long description that simulates the kind of complex data we get from Notion. It includes multiple paragraphs, formatting, and various data types that make pinData quite large when you have multiple records."}}]},
+            "Created": {"created_time": "2025-09-07T22:30:00.000Z"},
+            "People": {"people": [{"id": "user123", "name": "John Doe", "email": "john@example.com"}]},
+            "Relations": {"relation": [{"id": "page456"}, {"id": "page789"}]}
+          },
+          "children": [
+            {"type": "paragraph", "paragraph": {"rich_text": [{"text": {"content": "First paragraph of content"}}]}},
+            {"type": "heading_2", "heading_2": {"rich_text": [{"text": {"content": "Section Header"}}]}},
+            {"type": "bulleted_list_item", "bulleted_list_item": {"rich_text": [{"text": {"content": "First bullet point"}}]}},
+            {"type": "bulleted_list_item", "bulleted_list_item": {"rich_text": [{"text": {"content": "Second bullet point with more details"}}]}}
+          ]
+        },
+        "metadata": {
+          "extracted_at": "2025-09-07T22:30:15.123Z",
+          "source": "notion_api_v1",
+          "batch_id": "batch_001",
+          "page_count": 1
+        }
+      }
+    }
+  ]
+}

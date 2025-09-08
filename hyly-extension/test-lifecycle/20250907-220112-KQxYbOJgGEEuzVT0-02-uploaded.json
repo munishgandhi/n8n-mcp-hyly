@@ -1,0 +1,45 @@
+{
+  "name": "t.HelloWorld v20250718-190747 v20250907-220112",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        256,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get current timestamp in YYYYMMDD-HHMMSS format in Eastern timezone\nconst now = new Date();\n\n// Convert to Eastern timezone\nconst easternTime = new Date(now.toLocaleString(\"en-US\", {timeZone: \"America/New_York\"}));\n\nconst timestamp = easternTime.getFullYear() +\n  String(easternTime.getMonth() + 1).padStart(2, '0') +\n  String(easternTime.getDate()).padStart(2, '0') + '-' +\n  String(easternTime.getHours()).padStart(2, '0') +\n  String(easternTime.getMinutes()).padStart(2, '0') +\n  String(easternTime.getSeconds()).padStart(2, '0');\n\nreturn [{ \n  message: `Hello mcpB - ${timestamp}`,\n  timezone: 'Eastern',\n  utcTime: now.toISOString(),\n  easternTime: easternTime.toISOString()\n}];"
+      },
+      "id": "hello-code",
+      "name": "Hello Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        256
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Hello Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

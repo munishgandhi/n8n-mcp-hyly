@@ -1,0 +1,11 @@
+{
+  "Manual Trigger": [
+    {
+      "json": {
+        "name": "Test Data",
+        "timestamp": "2025-09-07",
+        "value": 42
+      }
+    }
+  ]
+}

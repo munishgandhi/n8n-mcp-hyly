@@ -1,0 +1,145 @@
+{
+  "success": true,
+  "data": {
+    "id": "634",
+    "finished": true,
+    "mode": "manual",
+    "retryOf": null,
+    "retrySuccessId": null,
+    "status": "success",
+    "createdAt": "2025-09-06T00:01:56.683Z",
+    "startedAt": "2025-09-06T00:01:56.702Z",
+    "stoppedAt": "2025-09-06T00:01:56.752Z",
+    "deletedAt": null,
+    "workflowId": "KQxYbOJgGEEuzVT0",
+    "waitTill": null,
+    "data": {
+      "startData": {},
+      "resultData": {
+        "runData": {
+          "Manual Trigger": [
+            {
+              "startTime": 1757116916710,
+              "executionIndex": 0,
+              "source": [],
+              "hints": [],
+              "executionTime": 2,
+              "executionStatus": "success",
+              "data": {
+                "main": [
+                  [
+                    {
+                      "json": {},
+                      "pairedItem": {
+                        "item": 0
+                      }
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "Hello Code": [
+            {
+              "startTime": 1757116916722,
+              "executionIndex": 1,
+              "source": [
+                {
+                  "previousNode": "Manual Trigger"
+                }
+              ],
+              "hints": [
+                {
+                  "message": "To make sure expressions after this node work, return the input items that produced each output item. <a target=\"_blank\" href=\"https://docs.n8n.io/data/data-mapping/data-item-linking/item-linking-code-node/\">More info</a>",
+                  "location": "outputPane"
+                }
+              ],
+              "executionTime": 19,
+              "executionStatus": "success",
+              "data": {
+                "main": [
+                  [
+                    {
+                      "json": {
+                        "message": "Hello World - 20250905-200156",
+                        "timezone": "Eastern",
+                        "utcTime": "2025-09-06T00:01:56.740Z",
+                        "easternTime": "2025-09-05T20:01:56.000Z"
+                      },
+                      "pairedItem": {
+                        "item": 0
+                      }
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "pinData": {},
+        "lastNodeExecuted": "Hello Code"
+      },
+      "executionData": {
+        "contextData": {},
+        "nodeExecutionStack": [],
+        "metadata": {},
+        "waitingExecution": {},
+        "waitingExecutionSource": {}
+      }
+    },
+    "workflowData": {
+      "id": "KQxYbOJgGEEuzVT0",
+      "name": "t.HelloWorld v20250718-190747",
+      "active": false,
+      "nodes": [
+        {
+          "parameters": {
+            "notice": ""
+          },
+          "id": "manual-trigger",
+          "name": "Manual Trigger",
+          "type": "n8n-nodes-base.manualTrigger",
+          "typeVersion": 1,
+          "position": [
+            256,
+            256
+          ]
+        },
+        {
+          "parameters": {
+            "mode": "runOnceForAllItems",
+            "language": "javaScript",
+            "jsCode": "// Get current timestamp in YYYYMMDD-HHMMSS format in Eastern timezone\nconst now = new Date();\n\n// Convert to Eastern timezone\nconst easternTime = new Date(now.toLocaleString(\"en-US\", {timeZone: \"America/New_York\"}));\n\nconst timestamp = easternTime.getFullYear() +\n  String(easternTime.getMonth() + 1).padStart(2, '0') +\n  String(easternTime.getDate()).padStart(2, '0') + '-' +\n  String(easternTime.getHours()).padStart(2, '0') +\n  String(easternTime.getMinutes()).padStart(2, '0') +\n  String(easternTime.getSeconds()).padStart(2, '0');\n\nreturn { \n  message: `Hello World - ${timestamp}`,\n  timezone: 'Eastern',\n  utcTime: now.toISOString(),\n  easternTime: easternTime.toISOString()\n};",
+            "notice": ""
+          },
+          "id": "hello-code",
+          "name": "Hello Code",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            480,
+            256
+          ]
+        }
+      ],
+      "connections": {
+        "Manual Trigger": {
+          "main": [
+            [
+              {
+                "node": "Hello Code",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "settings": {
+        "executionOrder": "v1"
+      },
+      "pinData": {}
+    },
+    "customData": {}
+  }
+}

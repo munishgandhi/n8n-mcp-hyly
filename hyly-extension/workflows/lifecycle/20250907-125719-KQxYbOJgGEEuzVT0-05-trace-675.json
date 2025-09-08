@@ -1,0 +1,85 @@
+{
+  "executionMethod": "n8n CLI",
+  "command": "docker exec hyly-n8n-app n8n execute --id=KQxYbOJgGEEuzVT0 --rawOutput",
+  "executionId": "cli-20250907-125719",
+  "workflowId": "KQxYbOJgGEEuzVT0", 
+  "timestamp": "2025-09-07T16:57:19.255Z",
+  "data": {
+    "startData": {},
+    "resultData": {
+      "runData": {
+        "Manual Trigger": [
+          {
+            "startTime": 1757264239257,
+            "executionIndex": 0,
+            "source": [],
+            "hints": [],
+            "executionTime": 0,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {},
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Hello Code": [
+          {
+            "startTime": 1757264239265,
+            "executionIndex": 1,
+            "source": [
+              {
+                "previousNode": "Manual Trigger"
+              }
+            ],
+            "hints": [
+              {
+                "message": "To make sure expressions after this node work, return the input items that produced each output item. <a target=\"_blank\" href=\"https://docs.n8n.io/data/data-mapping/data-item-linking/item-linking-code-node/\">More info</a>",
+                "location": "outputPane"
+              }
+            ],
+            "executionTime": 32,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "message": "Hello mcpA - 20250907-125719",
+                      "timezone": "Eastern",
+                      "utcTime": "2025-09-07T16:57:19.296Z",
+                      "easternTime": "2025-09-07T12:57:19.000Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "lastNodeExecuted": "Hello Code"
+    },
+    "executionData": {
+      "contextData": {},
+      "nodeExecutionStack": [],
+      "metadata": {},
+      "waitingExecution": {},
+      "waitingExecutionSource": {}
+    }
+  },
+  "mode": "cli",
+  "startedAt": "2025-09-07T16:57:19.255Z",
+  "stoppedAt": "2025-09-07T16:57:19.304Z",
+  "status": "running",
+  "finished": true
+}

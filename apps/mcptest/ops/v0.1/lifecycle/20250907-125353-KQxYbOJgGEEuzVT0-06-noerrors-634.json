@@ -1,0 +1,33 @@
+{
+  "executionId": "634",
+  "workflowId": "KQxYbOJgGEEuzVT0",
+  "status": "success",
+  "analysisTimestamp": "2025-09-07T12:53:53-04:00",
+  "errorCount": 0,
+  "warningCount": 1,
+  "executionSummary": {
+    "totalNodes": 2,
+    "successfulNodes": 2,
+    "failedNodes": 0,
+    "executionTime": "50ms",
+    "dataItems": 1
+  },
+  "warnings": [
+    {
+      "type": "CODE_VERSION_MISMATCH",
+      "severity": "warning",
+      "message": "Execution contains old code version - shows 'Hello World' instead of expected 'Hello mcpA'",
+      "details": "This execution (634) occurred on 2025-09-06T00:01:56 but our code update was applied on 2025-09-07T16:52:24. Need fresh execution to test new code."
+    }
+  ],
+  "recommendations": [
+    "Execute workflow manually in n8n UI to test updated 'Hello mcpA' message",
+    "The workflow code has been successfully updated and validated via MCP"
+  ],
+  "output": {
+    "message": "Hello World - 20250905-200156",
+    "timezone": "Eastern",
+    "utcTime": "2025-09-06T00:01:56.740Z",
+    "easternTime": "2025-09-05T20:01:56.000Z"
+  }
+}

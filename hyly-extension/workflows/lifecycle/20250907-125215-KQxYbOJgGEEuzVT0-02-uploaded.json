@@ -1,0 +1,66 @@
+{
+  "success": true,
+  "data": {
+    "createdAt": "2025-07-18T23:07:47.151Z",
+    "updatedAt": "2025-09-07T16:52:24.812Z",
+    "id": "KQxYbOJgGEEuzVT0",
+    "name": "t.HelloWorld v20250718-190747",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "manual-trigger",
+        "name": "Manual Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          256,
+          256
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Get current timestamp in YYYYMMDD-HHMMSS format in Eastern timezone\nconst now = new Date();\n\n// Convert to Eastern timezone\nconst easternTime = new Date(now.toLocaleString(\"en-US\", {timeZone: \"America/New_York\"}));\n\nconst timestamp = easternTime.getFullYear() +\n  String(easternTime.getMonth() + 1).padStart(2, '0') +\n  String(easternTime.getDate()).padStart(2, '0') + '-' +\n  String(easternTime.getHours()).padStart(2, '0') +\n  String(easternTime.getMinutes()).padStart(2, '0') +\n  String(easternTime.getSeconds()).padStart(2, '0');\n\nreturn [{ \n  message: `Hello mcpA - ${timestamp}`,\n  timezone: 'Eastern',\n  utcTime: now.toISOString(),\n  easternTime: easternTime.toISOString()\n}];"
+        },
+        "id": "hello-code",
+        "name": "Hello Code",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          480,
+          256
+        ]
+      }
+    ],
+    "connections": {
+      "Manual Trigger": {
+        "main": [
+          [
+            {
+            "node": "Hello Code",
+            "type": "main",
+            "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": {
+      "instanceId": "d176d3e713583102d7a27545d454fc7ab9eb15625a09aa8b5f581ecfe0656d00"
+    },
+    "pinData": {},
+    "versionId": "45bf8406-13cf-4b84-885c-ff48f517df9d",
+    "triggerCount": 0
+  },
+  "message": "Workflow updated successfully. Applied 1 operations.",
+  "details": {
+    "operationsApplied": 1,
+    "workflowId": "KQxYbOJgGEEuzVT0",
+    "workflowName": "t.HelloWorld v20250718-190747"
+  }
+}

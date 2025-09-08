@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "message": "Workflow updated successfully. Applied 1 operations.",
+  "details": {
+    "operationsApplied": 1,
+    "workflowId": "KQxYbOJgGEEuzVT0",
+    "workflowName": "t.HelloWorld v20250718-190747",
+    "change": "Hello mcpA -> Hello mcpB",
+    "updatedAt": "2025-09-07T17:01:44.437Z",
+    "versionId": "348cc801-9e04-487c-a844-8b65f73c131c"
+  }
+}
